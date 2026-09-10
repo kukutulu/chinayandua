@@ -62,12 +62,16 @@ interface RarityMeta {
   glow: string;
 }
 
-/** Tỉ lệ gacha của banner hiện tại. Pity: 10 pull không SR+ thì pull 10 chắc chắn SR+. */
+/**
+ * Tỉ lệ banner: N 50% · R 30% · SR 14% · SSR 5% · UR 1%.
+ * Pity kép: 100 pull không SSR thì pull 100 chắc chắn SSR;
+ * 300 pull không UR thì pull 300 chắc chắn UR.
+ */
 export const RARITY_META: Record<Rarity, RarityMeta> = {
   N: {
     label: "Thường",
     stars: 1,
-    weight: 45,
+    weight: 50,
     color: "#9aa4b2",
     soft: "rgba(154,164,178,.14)",
     gradient: "linear-gradient(135deg,#3a4150,#232936)",
@@ -85,7 +89,7 @@ export const RARITY_META: Record<Rarity, RarityMeta> = {
   SR: {
     label: "Sử thi",
     stars: 3,
-    weight: 15,
+    weight: 14,
     color: "#c084fc",
     soft: "rgba(192,132,252,.16)",
     gradient: "linear-gradient(135deg,#6b21a8,#3b0764)",
@@ -94,7 +98,7 @@ export const RARITY_META: Record<Rarity, RarityMeta> = {
   SSR: {
     label: "Huyền thoại",
     stars: 4,
-    weight: 8,
+    weight: 5,
     color: "#fbbf24",
     soft: "rgba(251,191,36,.16)",
     gradient: "linear-gradient(135deg,#92400e,#451a03)",
@@ -103,7 +107,7 @@ export const RARITY_META: Record<Rarity, RarityMeta> = {
   UR: {
     label: "Vô giá",
     stars: 5,
-    weight: 2,
+    weight: 1,
     color: "#fb7185",
     soft: "rgba(251,113,133,.16)",
     gradient: "linear-gradient(135deg,#881337,#4c0519)",
@@ -111,16 +115,26 @@ export const RARITY_META: Record<Rarity, RarityMeta> = {
   },
 };
 
+/** Số pull liên tiếp chưa ra SSR / UR. UR reset cả hai; SSR chỉ reset pity SSR. */
+export interface Pity {
+  ssr: number;
+  ur: number;
+}
+
+export const PITY_SSR_AT = 100;
+export const PITY_UR_AT = 300;
+
 const pick = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 
-function rollRarity(pity: number): Rarity {
-  // Pity cứng: pull thứ 10 không SR+ thì ép tối thiểu SR
-  if (pity >= 9) {
-    const r = Math.random() * (15 + 8 + 2);
-    if (r < 15) return "SR";
-    if (r < 23) return "SSR";
-    return "UR";
-  }
+/**
+ * Thuật toán roll một lượt:
+ * 1. Kiểm tra pity cứng trước (UR@300 ưu tiên hơn SSR@100).
+ * 2. Không pity thì weighted random: r = Math.random() * 100,
+ *    đi qua trọng số cộng dồn [N50, R30, SR14, SSR5, UR1].
+ */
+function rollRarity(p: Pity): Rarity {
+  if (p.ur + 1 >= PITY_UR_AT) return "UR";
+  if (p.ssr + 1 >= PITY_SSR_AT) return "SSR";
   const total = RARITY_ORDER.reduce((s, r) => s + RARITY_META[r].weight, 0);
   let r = Math.random() * total;
   for (const rarity of RARITY_ORDER) {
@@ -130,8 +144,8 @@ function rollRarity(pity: number): Rarity {
   return "N";
 }
 
-export function rollOne(pool: Dish[], pity: number, rateUpId: string): Dish {
-  const rarity = rollRarity(pity);
+function rollDish(pool: Dish[], rarity: Rarity, rateUpId: string): Dish {
+  // SSR tung đồng xu 50/50 về món rate-up của banner
   if (rarity === "SSR" && Math.random() < 0.5) {
     const rateUp = pool.find((d) => d.id === rateUpId);
     if (rateUp) return rateUp;
@@ -140,18 +154,25 @@ export function rollOne(pool: Dish[], pity: number, rateUpId: string): Dish {
   return pick(bucket.length ? bucket : pool);
 }
 
+function nextPity(p: Pity, r: Rarity): Pity {
+  if (r === "UR") return { ssr: 0, ur: 0 };
+  if (r === "SSR") return { ssr: 0, ur: p.ur + 1 };
+  if (r === "SR") return { ssr: p.ssr + 1, ur: p.ur + 1 };
+  return { ssr: p.ssr + 1, ur: p.ur + 1 };
+}
+
 export function rollMany(
   pool: Dish[],
   count: number,
-  pityStart: number,
+  pityStart: Pity,
   rateUpId: string,
-): { results: Dish[]; pityEnd: number } {
+): { results: Dish[]; pityEnd: Pity } {
   const results: Dish[] = [];
   let pity = pityStart;
   for (let i = 0; i < count; i++) {
-    const dish = rollOne(pool, pity, rateUpId);
+    const dish = rollDish(pool, rollRarity(pity), rateUpId);
     results.push(dish);
-    pity = dish.rarity === "SR" || dish.rarity === "SSR" || dish.rarity === "UR" ? 0 : pity + 1;
+    pity = nextPity(pity, dish.rarity);
   }
   return { results, pityEnd: pity };
 }
