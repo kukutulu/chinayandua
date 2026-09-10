@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trưa Nay Ăn Gì — Hanoi Lunch Gacha",
-  description: "Gacha món ăn trưa ở Hà Nội: quay banner, random món ngon theo độ hiếm.",
+  title: "Chi nay ăn dừa — Hanoi Lunch Gacha",
+  description:
+    "Gacha món ăn trưa ở Hà Nội: quay banner, random món ngon theo độ hiếm.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

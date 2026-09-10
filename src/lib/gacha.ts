@@ -4,16 +4,51 @@ export type Rarity = "N" | "R" | "SR" | "SSR" | "UR";
 
 export interface Dish {
   id: string;
+  district: string;
   name: string;
-  desc: string;
+  /** Tên quán */
+  quan: string;
+  address: string;
   price: number;
-  spot: string;
+  /** Đánh giá tham khảo (thang 5) */
+  rating: number;
+  /** Giờ mở cửa tham khảo */
+  hours: string;
+  desc: string;
   emoji: string;
   rarity: Rarity;
   tag: string;
 }
 
 export const DISHES = raw as Dish[];
+
+export interface District {
+  id: string;
+  name: string;
+}
+
+export const DISTRICTS: District[] = [
+  { id: "hoan-kiem", name: "Hoàn Kiếm" },
+  { id: "ba-dinh", name: "Ba Đình" },
+  { id: "hai-ba-trung", name: "Hai Bà Trưng" },
+  { id: "dong-da", name: "Đống Đa" },
+  { id: "cau-giay", name: "Cầu Giấy" },
+  { id: "thanh-xuan", name: "Thanh Xuân" },
+  { id: "hoang-mai", name: "Hoàng Mai" },
+  { id: "tay-ho", name: "Tây Hồ" },
+];
+
+/** Món SSR được rate-up của từng quận (50% số lần ra SSR). */
+export const RATE_UP_BY_DISTRICT: Record<string, string> = {
+  "hoan-kiem": "hk-pho-bat-dan",
+  "ba-dinh": "bd-pho-cuon-ngu-xa",
+  "hai-ba-trung": "hbt-mi-van-than-hoa-ma",
+  "dong-da": "dd-com-tho-anh-nguyen",
+  "cau-giay": "cg-bun-dau-nghia-tan",
+  "thanh-xuan": "tx-bun-dau-trieu-khuc",
+  "hoang-mai": "hm-bun-ca-linh-dam",
+  "tay-ho": "th-bun-oc-phu-tay-ho",
+};
 
 export const RARITY_ORDER: Rarity[] = ["N", "R", "SR", "SSR", "UR"];
 
@@ -76,10 +111,6 @@ export const RARITY_META: Record<Rarity, RarityMeta> = {
   },
 };
 
-/** Id món SSR được rate-up trong banner này (50% số lần ra SSR). */
-export const RATE_UP_ID = "pho-bat-dan";
-
-const byRarity = (r: Rarity) => DISHES.filter((d) => d.rarity === r);
 const pick = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 
 function rollRarity(pity: number): Rarity {
@@ -99,20 +130,26 @@ function rollRarity(pity: number): Rarity {
   return "N";
 }
 
-export function rollOne(pity: number): Dish {
+export function rollOne(pool: Dish[], pity: number, rateUpId: string): Dish {
   const rarity = rollRarity(pity);
   if (rarity === "SSR" && Math.random() < 0.5) {
-    const rateUp = DISHES.find((d) => d.id === RATE_UP_ID);
+    const rateUp = pool.find((d) => d.id === rateUpId);
     if (rateUp) return rateUp;
   }
-  return pick(byRarity(rarity));
+  const bucket = pool.filter((d) => d.rarity === rarity);
+  return pick(bucket.length ? bucket : pool);
 }
 
-export function rollMany(count: number, pityStart: number): { results: Dish[]; pityEnd: number } {
+export function rollMany(
+  pool: Dish[],
+  count: number,
+  pityStart: number,
+  rateUpId: string,
+): { results: Dish[]; pityEnd: number } {
   const results: Dish[] = [];
   let pity = pityStart;
   for (let i = 0; i < count; i++) {
-    const dish = rollOne(pity);
+    const dish = rollOne(pool, pity, rateUpId);
     results.push(dish);
     pity = dish.rarity === "SR" || dish.rarity === "SSR" || dish.rarity === "UR" ? 0 : pity + 1;
   }

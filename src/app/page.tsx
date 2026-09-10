@@ -4,8 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SplitText, ShinyText, SpotlightCard, StarBorder } from "@/components/bits";
 import {
   DISHES,
+  DISTRICTS,
   Dish,
-  RATE_UP_ID,
+  RATE_UP_BY_DISTRICT,
   RARITY_META,
   RARITY_ORDER,
   Rarity,
@@ -53,7 +54,20 @@ function RarityStamp({ rarity }: { rarity: Rarity }) {
   );
 }
 
+function DishMeta({ dish, light }: { dish: Dish; light?: boolean }) {
+  return (
+    <div className={`mt-2 space-y-0.5 text-xs ${light ? "text-white/85" : "text-white/85"}`}>
+      <p className="font-extrabold text-amber-200">📍 {dish.quan}</p>
+      <p className="text-white/60">{dish.address}</p>
+      <p className="font-bold text-white/80">
+        {formatPrice(dish.price)} · <span className="text-amber-300">★ {dish.rating.toFixed(1)}</span> · 🕚 {dish.hours}
+      </p>
+    </div>
+  );
+}
+
 export default function Home() {
+  const [district, setDistrict] = useState("hoan-kiem");
   const [tickets, setTickets] = useState(START_TICKETS);
   const [phase, setPhase] = useState<Phase>("idle");
   const [results, setResults] = useState<Dish[]>([]);
@@ -90,11 +104,15 @@ export default function Home() {
     if (timer.current) clearTimeout(timer.current);
   }, []);
 
+  const pool = useMemo(() => DISHES.filter((d) => d.district === district), [district]);
+  const districtName = DISTRICTS.find((d) => d.id === district)?.name ?? district;
+  const rateUpId = RATE_UP_BY_DISTRICT[district];
+  const rateUp = pool.find((d) => d.id === rateUpId) ?? pool[0];
   const discovered = useMemo(() => new Set(historyIds), [historyIds]);
-  const rateUp = DISHES.find((d) => d.id === RATE_UP_ID) ?? DISHES[0];
+  const discoveredInPool = pool.filter((d) => discovered.has(d.id)).length;
   const pendingTop = pending.length ? maxRarity(pending) : "N";
   const pendingColor = RARITY_META[pendingTop].color;
-  const filtered = filter === "ALL" ? DISHES : DISHES.filter((d) => d.rarity === filter);
+  const filtered = filter === "ALL" ? pool : pool.filter((d) => d.rarity === filter);
 
   const doPull = (count: 1 | 10) => {
     if (phase === "summoning") return;
@@ -102,7 +120,7 @@ export default function Home() {
       alert("Hết vé rồi! Bấm +Nạp vé để quay tiếp.");
       return;
     }
-    const { results: rolled, pityEnd } = rollMany(count, pity);
+    const { results: rolled, pityEnd } = rollMany(pool, count, pity, rateUpId);
     setPending(rolled);
     setPity(pityEnd);
     setTickets((t) => t - count);
@@ -164,6 +182,30 @@ export default function Home() {
         </div>
       </header>
 
+      {/* ---------- Chọn quận ---------- */}
+      <nav className="flex flex-wrap gap-2">
+        {DISTRICTS.map((d) => {
+          const done = DISHES.filter((x) => x.district === d.id && discovered.has(x.id)).length;
+          const active = district === d.id;
+          return (
+            <button
+              key={d.id}
+              onClick={() => {
+                setDistrict(d.id);
+                setFilter("ALL");
+              }}
+              className={`rounded-full border px-4 py-2 text-sm font-extrabold transition ${
+                active
+                  ? "border-amber-300/70 bg-amber-300/15 text-amber-200 shadow-[0_0_20px_rgba(251,191,36,.25)]"
+                  : "border-white/15 bg-white/5 text-white/65 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {d.name} <span className={active ? "text-amber-300/80" : "text-white/35"}>{done}/20</span>
+            </button>
+          );
+        })}
+      </nav>
+
       {/* ---------- Banner ---------- */}
       <SpotlightCard className="overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-violet-950 via-[#160a2e] to-sky-950 p-6 sm:p-8">
         <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72">
@@ -187,15 +229,15 @@ export default function Home() {
         <div className="relative grid items-center gap-6 md:grid-cols-[1.2fr_.8fr]">
           <div>
             <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-300/10 px-3 py-1 text-xs font-black uppercase tracking-widest text-amber-200">
-              ✨ Banner limited — kết thúc trong {countdown}
+              ✨ Banner {districtName} — kết thúc trong {countdown}
             </p>
             <h2 className="text-3xl font-black leading-tight sm:text-5xl">
-              <SplitText text="CƠM TRƯA" base={150} step={40} />
+              <SplitText key={district} text={districtName.toUpperCase()} base={150} step={40} />
               <br />
               <ShinyText className="text-4xl sm:text-6xl">SSR RATE-UP</ShinyText>
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base">
-              20 món trưa Hà Nội đang chờ. Quay ra món nào — trưa nay ăn món đó, cấm đổi ý.
+              20 món trưa {districtName} đang chờ. Quay ra món nào — trưa nay ăn món đó, cấm đổi ý.
               Bảo hiểm pity: 10 pull không SR trở lên thì pull 10 chắc chắn có hàng hiếm.
             </p>
 
@@ -226,7 +268,7 @@ export default function Home() {
           </div>
 
           {/* Món rate-up */}
-          <div className="shine card-in relative rounded-2xl border border-amber-300/40 p-5 text-center shadow-[0_0_50px_rgba(251,191,36,.25)]" style={{ background: RARITY_META.SSR.gradient, animationDelay: "400ms" }}>
+          <div className="shine card-in relative rounded-2xl border border-amber-300/40 p-5 text-center shadow-[0_0_50px_rgba(251,191,36,.25)]" style={{ background: RARITY_META.SSR.gradient }}>
             <RarityStamp rarity="SSR" />
             <div className="float-slow my-2 text-8xl drop-shadow-[0_10px_20px_rgba(0,0,0,.5)]">
               {rateUp.emoji}
@@ -235,9 +277,9 @@ export default function Home() {
               Rate-up 50% khung SSR
             </p>
             <p className="mt-1 text-xl font-black">{rateUp.name}</p>
-            <p className="mt-1 text-xs text-white/70">
-              {formatPrice(rateUp.price)} · {rateUp.spot}
-            </p>
+            <div className="mt-1 text-center">
+              <DishMeta dish={rateUp} />
+            </div>
           </div>
         </div>
       </SpotlightCard>
@@ -247,15 +289,15 @@ export default function Home() {
         <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h3 className="text-xl font-black">
-              Thực đơn Hà Nội{" "}
+              Thực đơn {districtName}{" "}
               <span className="text-sm font-bold text-white/50">
-                {discovered.size}/{DISHES.length} đã mở
+                {discoveredInPool}/{pool.length} đã mở
               </span>
             </h3>
             <div className="mt-2 h-2 w-56 overflow-hidden rounded-full bg-white/10">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-sky-400 via-fuchsia-400 to-amber-300 transition-all"
-                style={{ width: `${(discovered.size / DISHES.length) * 100}%` }}
+                style={{ width: `${(discoveredInPool / pool.length) * 100}%` }}
               />
             </div>
           </div>
@@ -288,7 +330,7 @@ export default function Home() {
               >
                 <div className="flex items-start justify-between gap-2">
                   <RarityStamp rarity={d.rarity} />
-                  {discovered.has(d.id) && <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">Đã mở</span>}
+                  {!locked && <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">Đã mở</span>}
                 </div>
                 <div className={`my-2 text-center text-5xl ${locked ? "opacity-30 grayscale" : ""}`}>
                   {locked ? "❔" : d.emoji}
@@ -297,10 +339,8 @@ export default function Home() {
                 {!locked && (
                   <>
                     <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/65">{d.desc}</p>
-                    <p className="mt-2 text-xs font-bold text-white/85">
-                      {formatPrice(d.price)} · <span className="font-normal text-white/60">{d.spot}</span>
-                    </p>
-                    <p className="mt-1 inline-block rounded-full bg-black/30 px-2 py-0.5 text-[11px] font-bold text-white/70">
+                    <DishMeta dish={d} />
+                    <p className="mt-1.5 inline-block rounded-full bg-black/30 px-2 py-0.5 text-[11px] font-bold text-white/70">
                       #{d.tag}
                     </p>
                   </>
@@ -324,7 +364,7 @@ export default function Home() {
               return (
                 <span
                   key={`${id}-${i}`}
-                  title={d.name}
+                  title={`${d.name} — ${d.quan}`}
                   className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold"
                   style={{
                     borderColor: `${RARITY_META[d.rarity].color}55`,
@@ -339,8 +379,10 @@ export default function Home() {
         </section>
       )}
 
-      <footer className="pt-2 text-center text-xs text-white/40">
+      <footer className="pt-2 text-center text-xs leading-relaxed text-white/40">
         Tỉ lệ: N 45% · R 30% · SR 15% · SSR 8% (½ ra món rate-up) · UR 2% · Pity SR+ mỗi 10 pull
+        <br />
+        Giá / giờ mở cửa / đánh giá là dữ liệu tham khảo lúc tổng hợp, nên check lại trước khi đi.
       </footer>
 
       {/* ---------- Overlay triệu hồi ---------- */}
@@ -359,7 +401,7 @@ export default function Home() {
               🍱
             </div>
             <p className="text-xl font-black tracking-wide">
-              <SplitText text="ĐANG TRIỆU HỒI MÓN TRƯA..." step={24} />
+              <SplitText text={`ĐANG TRIỆU HỒI MÓN TRƯA ${districtName.toUpperCase()}...`} step={24} />
             </p>
             <p className="text-sm text-white/60">Đầu bếp đang tung chảo, đừng thoát...</p>
             <button
@@ -396,8 +438,7 @@ export default function Home() {
             <div className={`mt-6 grid gap-3 ${results.length === 1 ? "grid-cols-1" : "grid-cols-2 sm:grid-cols-3"}`}>
               {results.map((d, i) => {
                 const meta = RARITY_META[d.rarity];
-                const firstPullCount = historyIds.filter((id) => id === d.id).length;
-                const firstTime = firstPullCount <= 1;
+                const firstTime = historyIds.filter((id) => id === d.id).length <= 1;
                 return (
                   <div
                     key={`${d.id}-${i}`}
@@ -417,9 +458,11 @@ export default function Home() {
                     <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-white/70 sm:text-sm">
                       {d.desc}
                     </p>
-                    <p className="mt-2 text-sm font-bold">
-                      {formatPrice(d.price)} · <span className="font-normal text-white/65">{d.spot}</span>
-                    </p>
+                    <div className="flex justify-center">
+                      <div className="text-left">
+                        <DishMeta dish={d} />
+                      </div>
+                    </div>
                     {firstTime && (
                       <p className="mx-auto mt-2 inline-block rounded-full bg-emerald-400/20 border border-emerald-300/50 px-2.5 py-0.5 text-[11px] font-black uppercase tracking-widest text-emerald-200">
                         ✨ New!
