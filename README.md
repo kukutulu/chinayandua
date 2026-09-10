@@ -1,4 +1,4 @@
-# Trưa Nay Ăn Gì — Hanoi Lunch Gacha
+# Chi nay ăn dừa — Hanoi Lunch Gacha
 
 Web app gacha món ăn trưa ở Hà Nội. Chọn quận, quay banner, trưa nay ăn món đó, cấm đổi ý.
 
