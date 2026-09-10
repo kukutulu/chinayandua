@@ -1,12 +1,26 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SplitText, ShinyText, SpotlightCard, StarBorder } from "@/components/bits";
 import {
-  SplitText,
-  ShinyText,
-  SpotlightCard,
-  StarBorder,
-} from "@/components/bits";
+  ArrowClockwise,
+  Check,
+  Clock,
+  CookingPot,
+  Crown,
+  DiceFive,
+  FastForward,
+  Fire,
+  LockSimple,
+  MapPin,
+  Plus,
+  ShieldCheck,
+  Sparkle,
+  SpeakerHigh,
+  SpeakerSlash,
+  Star,
+  Ticket,
+} from "@phosphor-icons/react";
 import {
   DISHES,
   DISTRICTS,
@@ -68,17 +82,21 @@ function RarityStamp({ rarity }: { rarity: Rarity }) {
   );
 }
 
-function DishMeta({ dish, light }: { dish: Dish; light?: boolean }) {
+function DishMeta({ dish }: { dish: Dish }) {
   return (
-    <div
-      className={`mt-2 space-y-0.5 text-xs ${light ? "text-white/85" : "text-white/85"}`}
-    >
-      <p className="font-extrabold text-amber-200">📍 {dish.quan}</p>
-      <p className="text-white/60">{dish.address}</p>
-      <p className="font-bold text-white/80">
-        {formatPrice(dish.price)} ·{" "}
-        <span className="text-amber-300">★ {dish.rating.toFixed(1)}</span> · 🕚{" "}
-        {dish.hours}
+    <div className="mt-2 space-y-1 text-xs">
+      <p className="flex items-center gap-1 font-extrabold text-amber-200">
+        <MapPin size={13} weight="fill" aria-hidden /> {dish.quan}
+      </p>
+      <p className="pl-[17px] text-white/60">{dish.address}</p>
+      <p className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pl-[17px] font-bold text-white/80">
+        <span>{formatPrice(dish.price)}</span>
+        <span className="inline-flex items-center gap-1 text-amber-300">
+          <Star size={13} weight="fill" aria-hidden /> {dish.rating.toFixed(1)}
+        </span>
+        <span className="inline-flex items-center gap-1 text-white/60">
+          <Clock size={13} aria-hidden /> {dish.hours}
+        </span>
       </p>
     </div>
   );
@@ -197,8 +215,8 @@ export default function Home() {
       {/* ---------- Header ---------- */}
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-amber-300 to-fuchsia-600 text-2xl shadow-lg shadow-fuchsia-950/50">
-            🍱
+          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-amber-300 to-fuchsia-600 text-zinc-950 shadow-lg shadow-fuchsia-950/50">
+            <CookingPot size={26} weight="duotone" aria-hidden />
           </div>
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-amber-200/70">
@@ -210,33 +228,33 @@ export default function Home() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-sm">
-          <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-bold">
-            🎟️ Vé: <b className="text-amber-300">{tickets}</b>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-bold">
+            <Ticket size={16} aria-hidden /> Vé: <b className="text-amber-300">{tickets}</b>
           </span>
-          <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-bold">
-            🛟 SSR:{" "}
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-bold">
+            <ShieldCheck size={16} aria-hidden /> SSR:{" "}
             <b className="text-fuchsia-300">
               {pity.ssr}/{PITY_SSR_AT}
             </b>
           </span>
-          <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-bold">
-            🐉 UR:{" "}
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-bold">
+            <Crown size={16} aria-hidden /> UR:{" "}
             <b className="text-rose-300">
               {pity.ur}/{PITY_UR_AT}
             </b>
           </span>
           <button
             onClick={() => setTickets((t) => t + 30)}
-            className="rounded-full border border-amber-300/40 bg-amber-300/10 px-3 py-1.5 font-bold text-amber-200 transition hover:bg-amber-300/20"
+            className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/40 bg-amber-300/10 px-3 py-1.5 font-bold text-amber-200 transition hover:bg-amber-300/20"
           >
-            + Nạp vé
+            <Plus size={16} aria-hidden /> Nạp vé
           </button>
           <button
             onClick={() => setMuted((m) => !m)}
-            className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-bold transition hover:bg-white/10"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-bold transition hover:bg-white/10"
             aria-label="Bật/tắt âm thanh"
           >
-            {muted ? "🔇" : "🔔"}
+            {muted ? <SpeakerSlash size={16} aria-hidden /> : <SpeakerHigh size={16} aria-hidden />}
           </button>
         </div>
       </header>
@@ -293,7 +311,7 @@ export default function Home() {
         <div className="relative grid items-center gap-6 md:grid-cols-[1.2fr_.8fr]">
           <div>
             <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-300/10 px-3 py-1 text-xs font-black uppercase tracking-widest text-amber-200">
-              ✨ Banner {districtName} — kết thúc trong {countdown}
+              <Sparkle size={14} weight="fill" aria-hidden /> Banner {districtName}, còn {countdown}
             </p>
             <h2 className="text-3xl font-black leading-tight sm:text-5xl">
               <SplitText
@@ -308,7 +326,7 @@ export default function Home() {
               </ShinyText>
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base">
-              20 món trưa {districtName} đang chờ. Quay ra món nào — trưa nay ăn
+              20 món trưa {districtName} đang chờ. Quay ra món nào thì trưa nay ăn
               món đó, cấm đổi ý. Bảo hiểm kép: {PITY_SSR_AT} pull không SSR thì
               pull {PITY_SSR_AT} chắc chắn SSR; {PITY_UR_AT} pull không UR thì
               pull {PITY_UR_AT} chắc chắn UR.
@@ -332,13 +350,13 @@ export default function Home() {
 
             <div className="mt-6 flex flex-wrap gap-3">
               <StarBorder onClick={() => doPull(1)} glow="rgba(56,189,248,.6)">
-                🎲 QUAY x1 <span className="opacity-70">· 1 vé</span>
+                <DiceFive size={18} weight="duotone" aria-hidden /> QUAY x1 <span className="opacity-70">(1 vé)</span>
               </StarBorder>
               <StarBorder
                 onClick={() => doPull(10)}
                 glow="rgba(251,191,36,.65)"
               >
-                🔥 QUAY x10 <span className="opacity-70">· 10 vé</span>
+                <Fire size={18} weight="duotone" aria-hidden /> QUAY x10 <span className="opacity-70">(10 vé)</span>
               </StarBorder>
             </div>
           </div>
@@ -418,7 +436,7 @@ export default function Home() {
                 <div
                   className={`my-2 text-center text-5xl ${locked ? "opacity-30 grayscale" : ""}`}
                 >
-                  {locked ? "❔" : d.emoji}
+                  {locked ? <LockSimple size={40} aria-hidden /> : d.emoji}
                 </div>
                 <p className="font-extrabold leading-snug">
                   {locked ? "Món bí ẩn" : d.name}
@@ -453,7 +471,7 @@ export default function Home() {
               return (
                 <span
                   key={`${id}-${i}`}
-                  title={`${d.name} — ${d.quan}`}
+                  title={`${d.name} - ${d.quan}`}
                   className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold"
                   style={{
                     borderColor: `${RARITY_META[d.rarity].color}55`,
@@ -469,11 +487,8 @@ export default function Home() {
       )}
 
       <footer className="pt-2 text-center text-xs leading-relaxed text-white/40">
-        Tỉ lệ: N 50% · R 30% · SR 14% · SSR 5% (½ ra món rate-up) · UR 1% · Pity
-        SSR@{PITY_SSR_AT} · UR@{PITY_UR_AT}
-        <br />
-        Giá / giờ mở cửa / đánh giá là dữ liệu tham khảo lúc tổng hợp, nên check
-        lại trước khi đi.
+        <p>Tỉ lệ: N 50%, R 30%, SR 14%, SSR 5% (1/2 ra món rate-up), UR 1%.</p>
+        <p>Pity SSR@{PITY_SSR_AT}, UR@{PITY_UR_AT}. Giá, giờ mở cửa và đánh giá là dữ liệu tham khảo lúc tổng hợp, nên check lại trước khi đi.</p>
       </footer>
 
       {/* ---------- Overlay triệu hồi ---------- */}
@@ -506,9 +521,9 @@ export default function Home() {
             </p>
             <button
               onClick={skipSummon}
-              className="mt-2 rounded-full border border-white/25 bg-white/10 px-5 py-2 text-sm font-bold transition hover:bg-white/20"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-5 py-2 text-sm font-bold transition hover:bg-white/20"
             >
-              Bỏ qua ⏩
+              <FastForward size={16} aria-hidden /> Bỏ qua
             </button>
           </div>
         </div>
@@ -525,7 +540,7 @@ export default function Home() {
                 </span>
               ) : (
                 <span>
-                  Combo trưa nay —{" "}
+                  Combo trưa nay:{" "}
                   <ShinyText>
                     {results.some(
                       (d) => d.rarity === "UR" || d.rarity === "SSR",
@@ -575,8 +590,8 @@ export default function Home() {
                       </div>
                     </div>
                     {firstTime && (
-                      <p className="mx-auto mt-2 inline-block rounded-full bg-emerald-400/20 border border-emerald-300/50 px-2.5 py-0.5 text-[11px] font-black uppercase tracking-widest text-emerald-200">
-                        ✨ New!
+                      <p className="mx-auto mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-400/20 border border-emerald-300/50 px-2.5 py-0.5 text-[11px] font-black uppercase tracking-widest text-emerald-200">
+                        <Sparkle size={12} weight="fill" aria-hidden /> Mới mở
                       </p>
                     )}
                   </div>
@@ -587,15 +602,15 @@ export default function Home() {
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <button
                 onClick={() => setPhase("idle")}
-                className="rounded-full border border-white/25 bg-white/10 px-6 py-3 font-extrabold transition hover:bg-white/20"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-6 py-3 font-extrabold transition hover:bg-white/20"
               >
-                Nhận món ✅
+                <Check size={18} aria-hidden /> Nhận món
               </button>
               <StarBorder
                 onClick={() => doPull(results.length === 1 ? 1 : 10)}
                 glow="rgba(251,191,36,.65)"
               >
-                🔁 Quay tiếp {results.length === 1 ? "x1" : "x10"}
+                <ArrowClockwise size={18} aria-hidden /> Quay tiếp {results.length === 1 ? "x1" : "x10"}
               </StarBorder>
             </div>
           </div>

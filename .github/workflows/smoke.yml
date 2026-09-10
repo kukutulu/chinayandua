@@ -1,0 +1,21 @@
+name: Smoke
+
+on:
+  deployment_status:
+
+jobs:
+  smoke:
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check deployed URL
+        env:
+          URL: ${{ github.event.deployment_status.environment_url }}
+        run: |
+          for i in 1 2 3 4 5; do
+            if curl -sSf "$URL" -o /tmp/home.html; then
+              break
+            fi
+            sleep 10
+          done
+          grep -q "Hanoi Lunch Gacha" /tmp/home.html

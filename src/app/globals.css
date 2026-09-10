@@ -271,3 +271,24 @@ body {
 ::selection {
   background: rgba(251, 191, 36, 0.4);
 }
+
+/* Giảm chuyển động khi hệ điều hành yêu cầu: tắt vòng lặp vô hạn,
+   giữ nguyên trạng thái cuối của animation một lần. */
+@media (prefers-reduced-motion: reduce) {
+  .rays,
+  .orb,
+  .shine::after,
+  .float-slow,
+  .mote,
+  .text-shimmer,
+  .rainbow-text,
+  .star-border::before {
+    animation: none;
+  }
+  .split-char,
+  .card-in {
+    opacity: 1;
+    transform: none;
+    animation-duration: 0.01ms;
+  }
+}
