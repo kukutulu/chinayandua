@@ -11,9 +11,14 @@ jobs:
       - name: Check deployed URL
         env:
           URL: ${{ github.event.deployment_status.environment_url }}
+          BYPASS: ${{ secrets.VERCEL_BYPASS }}
         run: |
+          TARGET="$URL"
+          if [ -n "$BYPASS" ]; then
+            TARGET="$URL?x-vercel-protection-bypass=$BYPASS"
+          fi
           for i in 1 2 3 4 5; do
-            if curl -sSf "$URL" -o /tmp/home.html; then
+            if curl -sSfL --max-time 30 "$TARGET" -o /tmp/home.html; then
               break
             fi
             sleep 10
