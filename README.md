@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Trưa Nay Ăn Gì — Hanoi Lunch Gacha
 
-## Getting Started
+Web app gacha món ăn trưa ở Hà Nội. Chọn quận, quay banner, trưa nay ăn món đó, cấm đổi ý.
 
-First, run the development server:
+## Chạy local
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Mở http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Luật gacha
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- 8 quận trung tâm (Hoàn Kiếm, Ba Đình, Hai Bà Trưng, Đống Đa, Cầu Giấy, Thanh Xuân, Hoàng Mai, Tây Hồ), mỗi quận 20 món kèm tên quán, địa chỉ, giá, đánh giá, giờ mở cửa (`src/data/dishes.json`).
+- Tỉ lệ: N 50%, R 30%, SR 14%, SSR 5%, UR 1%. Nửa số lần ra SSR về món rate-up của banner.
+- Pity kép: 100 pull không SSR thì pull 100 chắc chắn SSR; 300 pull không UR thì pull 300 chắc chắn UR. Logic roll ở `src/lib/gacha.ts`.
 
-## Learn More
+## CI/CD
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `.github/workflows/ci.yml`: typecheck + lint + build, và audit bảo mật. Chạy trên push/PR vào `main`.
+- `.github/workflows/dependency-review.yml`: chặn PR thêm dependency dính CVE mức high trở lên.
+- `.github/workflows/smoke.yml`: sau khi Vercel deploy xong, curl URL và kiểm tra trang render đúng.
+- Branch `main` được bảo vệ: merge qua PR, yêu cầu check `verify` và `audit` xanh.
+- Secret cần có: `VERCEL_BYPASS` (token Protection Bypass for Automation lấy từ Vercel Dashboard, cho smoke test vượt tường SSO).
