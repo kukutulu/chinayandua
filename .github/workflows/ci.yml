@@ -17,7 +17,11 @@ jobs:
           node-version: 25
           cache: npm
 
-      - run: npm ci
+      # npm install thay vì npm ci: @tailwindcss/oxide-wasm32-wasi khai báo
+      # bundleDependencies (@emnapi/*) mà npm không resolve đủ cross-platform
+      # (lock sinh trên win32 thiếu subtree này, runner linux fail EUSAGE).
+      # npm install vẫn tôn trọng version trong lock, giống hệt Vercel build.
+      - run: npm install --no-audit --no-fund
 
       - name: Typecheck
         run: npx tsc --noEmit
@@ -38,7 +42,7 @@ jobs:
           node-version: 25
           cache: npm
 
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
 
       - name: Audit (fail on high and above)
         run: npm audit --audit-level=high
