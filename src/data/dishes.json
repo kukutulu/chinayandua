@@ -1,0 +1,22 @@
+[
+  { "id": "com-binh-dan", "name": "Cơm Bình Dân Vỉa Hè", "desc": "3 món mặn + canh, trà đá free refill. Quốc dân văn phòng.", "price": 35000, "spot": "Ngõ Tự Do, Bách Khoa", "emoji": "🍱", "rarity": "N", "tag": "No-brainer" },
+  { "id": "com-rang-dua-bo", "name": "Cơm Rang Dưa Bò", "desc": "Hạt cơm săn, dưa chua vừa miệng, bò xào thơm nức.", "price": 40000, "spot": "Cơm rang 97 Tô Hiệu", "emoji": "🍳", "rarity": "N", "tag": "Chắc bụng" },
+  { "id": "bun-dau", "name": "Bún Đậu Mắm Tôm", "desc": "Mẹt đầy ú ụ: đậu giòn, chả cốm, nem chua. Mắm tôm sủi bọt.", "price": 45000, "spot": "Hàng Khay, Hoàn Kiếm", "emoji": "🍢", "rarity": "N", "tag": "Team mắm tôm" },
+  { "id": "mi-tom-trung", "name": "Mì Tôm Trứng Xúc Xích", "desc": "Cứu đói 5 phút. Ăn ở căng-tin mà ngon như nhà làm.", "price": 20000, "spot": "Căng-tin công ty", "emoji": "🍜", "rarity": "N", "tag": "Cứu đói" },
+  { "id": "banh-mi-pate", "name": "Bánh Mì Pate Trứng", "desc": "Vỏ giòn ruột mềm, pate béo + trứng ốp la chảy lòng đào.", "price": 25000, "spot": "Bánh mì 25 Hàng Cá", "emoji": "🥖", "rarity": "N", "tag": "Ăn nhanh" },
+  { "id": "xoi-xeo", "name": "Xôi Xéo Ruốc Hành", "desc": "Xôi dẻo, đậu xanh mịn, hành phi giòn rụm. No tới chiều.", "price": 20000, "spot": "Gánh xôi Lý Thường Kiệt", "emoji": "🍙", "rarity": "N", "tag": "Sáng trưa đều ngon" },
+  { "id": "pho-ga", "name": "Phở Gà Đùi Chặt", "desc": "Nước trong, gà ta dai ngọt, thêm quẩy là chuẩn bài.", "price": 40000, "spot": "Phở gà 55 Trung Yên", "emoji": "🍗", "rarity": "N", "tag": "Nhẹ bụng" },
+  { "id": "chao-suon", "name": "Cháo Sườn Quẩy Ruốc", "desc": "Cháo sánh mịn, sườn sụn mềm, quẩy giòn chấm kèm.", "price": 30000, "spot": "Cháo sườn Hàng Bồ", "emoji": "🥣", "rarity": "N", "tag": "Ốm cũng ăn" },
+  { "id": "bun-cha", "name": "Bún Chả Que Tre", "desc": "Chả nướng than hoa, nước mắm đu đủ chua ngọt đúng điệu.", "price": 45000, "spot": "Bún chả Đắc Kim, Hàng Mành", "emoji": "🥓", "rarity": "R", "tag": "Hà Nội gốc" },
+  { "id": "bun-bo-nam-bo", "name": "Bún Bò Nam Bộ", "desc": "Bò xào sả, lạc rang, rau sống + nước mắm chua ngọt.", "price": 50000, "spot": "Bách Phương, Hàng Điếu", "emoji": "🥗", "rarity": "R", "tag": "Trộn đều tay" },
+  { "id": "pho-cuon", "name": "Phở Cuốn Ngũ Xã", "desc": "Cuốn chặt tay, bò xào thơm, chấm mắm chua cay.", "price": 50000, "spot": "Phở cuốn Hưng Bền, Ngũ Xã", "emoji": "🥬", "rarity": "R", "tag": "Thanh mát" },
+  { "id": "banh-cuon", "name": "Bánh Cuốn Nóng Chả Quế", "desc": "Tráng tay tại chỗ, hành phi tự làm, nước mắm nóng.", "price": 40000, "spot": "Bánh cuốn Bà Hoành, Tô Hiến Thành", "emoji": "🫔", "rarity": "R", "tag": "Dẻo thơm" },
+  { "id": "mien-luon", "name": "Miến Lươn Trộn", "desc": "Lươn giòn rụm, miến dai, giá đỗ + rau răm dậy mùi.", "price": 55000, "spot": "Miến lươn Đông Thịnh, Hàng Điếu", "emoji": "🐟", "rarity": "R", "tag": "Giòn rụm" },
+  { "id": "bun-thang", "name": "Bún Thang Cầu Gỗ", "desc": "Nước dùng tôm he ngọt thanh, trứng thái chỉ, gà xé.", "price": 55000, "spot": "Bún thang 48 Cầu Gỗ", "emoji": "🍲", "rarity": "R", "tag": "Tinh tế" },
+  { "id": "bun-rieu", "name": "Bún Riêu Cua Bắp Bò", "desc": "Gạch cua béo ngậy, bắp bò giòn, thêm đậu rán hút nước.", "price": 55000, "spot": "Bún riêu 23 Quang Trung", "emoji": "🦀", "rarity": "SR", "tag": "Chua thanh" },
+  { "id": "cha-ca", "name": "Chả Cá Lã Vọng", "desc": "Cá lăng nghệ rán chảo đồng, thì là + hành hoa xèo xèo.", "price": 120000, "spot": "Chả cá Lã Vọng, Chả Cá", "emoji": "🐠", "rarity": "SR", "tag": "Huyền thoại phố cổ" },
+  { "id": "bun-ngan-nhan", "name": "Bún Ngan Nhàn", "desc": "Ngan chặt miếng dày, măng cay, nước chấm thần thánh. Xếp hàng cũng đáng.", "price": 50000, "spot": "Bún ngan Nhàn, Trung Yên", "emoji": "🦆", "rarity": "SR", "tag": "Xếp hàng quốc dân" },
+  { "id": "pho-bat-dan", "name": "Phở Bò Bát Đàn — Tái Gầu", "desc": "RATE-UP! Nước phở 40 năm, gầu giòn béo, xếp hàng 15 phút vẫn cười.", "price": 65000, "spot": "Phở Bát Đàn, Hoàn Kiếm", "emoji": "🐂", "rarity": "SSR", "tag": "Rate-up banner" },
+  { "id": "bun-cha-obama", "name": "Bún Chả Obama (Hương Liên)", "desc": "Quán tổng thống Mỹ từng ghé. Chả nem cua bể, nem rán giòn.", "price": 60000, "spot": "Hương Liên, Lê Văn Hưu", "emoji": "🇺🇸", "rarity": "SSR", "tag": "Tổng thống cũng ăn" },
+  { "id": "mam-com-me", "name": "Mâm Cơm Mẹ Gửi Từ Quê", "desc": "UR duy nhất server: thịt kho tàu, cá rán, canh cua, cà pháo. Vô giá.", "price": 0, "spot": "Tủ lạnh văn phòng, ngăn của bạn", "emoji": "🐉", "rarity": "UR", "tag": "Vô giá" }
+]
