@@ -1,12 +1,17 @@
-name: Smoke
+name: Smoke Test
 
 on:
   deployment_status:
+
+permissions:
+  contents: read
+  deployments: read
 
 jobs:
   smoke:
     if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Check deployed URL
         env:
@@ -17,10 +22,49 @@ jobs:
           if [ -n "$BYPASS" ]; then
             TARGET="$URL?x-vercel-protection-bypass=$BYPASS"
           fi
+
           for i in 1 2 3 4 5; do
+            echo "Attempt $i/5..."
             if curl -sSfL --max-time 30 "$TARGET" -o /tmp/home.html; then
+              echo "✓ Successfully downloaded homepage"
               break
             fi
-            sleep 10
+            if [ $i -lt 5 ]; then
+              echo "Retrying in 10 seconds..."
+              sleep 10
+            fi
           done
-          grep -q "Hanoi Lunch Gacha" /tmp/home.html
+
+          if [ ! -f /tmp/home.html ]; then
+            echo "✗ Failed to download homepage after 5 attempts"
+            exit 1
+          fi
+
+          if grep -q "Hanoi Lunch Gacha" /tmp/home.html; then
+            echo "✓ Homepage verification passed"
+          else
+            echo "✗ Homepage content verification failed"
+            echo "Expected 'Hanoi Lunch Gacha' in HTML"
+            exit 1
+          fi
+
+      - name: Monitor performance metrics
+        if: always()
+        env:
+          URL: ${{ github.event.deployment_status.environment_url }}
+          BYPASS: ${{ secrets.VERCEL_BYPASS }}
+        run: |
+          TARGET="$URL"
+          if [ -n "$BYPASS" ]; then
+            TARGET="$URL?x-vercel-protection-bypass=$BYPASS"
+          fi
+
+          echo "=== Performance Metrics ==="
+          curl -w "\nTime to first byte: %{time_starttransfer}s\nTotal time: %{time_total}s\nHTTP Status: %{http_code}\n" \
+            -o /dev/null -s "$TARGET" || true
+
+      - name: Alert on deployment failure
+        if: failure()
+        run: |
+          echo "::error::Smoke test failed for deployment"
+          exit 1
